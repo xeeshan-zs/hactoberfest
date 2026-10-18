@@ -4,7 +4,7 @@ import Dropzone from './components/Dropzone';
 import SamplePresets from './components/SamplePresets';
 import ResultDashboard from './components/ResultDashboard';
 import AboutPage from './components/AboutPage';
-import WelcomeModal from './components/WelcomeModal';
+import InstallPrompt from './components/InstallPrompt';
 import { directNimClientAnalysis } from './services/nimClientFallback';
 import { AlertCircle, Radio, Sparkles, Shield, Github, Zap } from 'lucide-react';
 
@@ -136,7 +136,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F4F4F0] dark:bg-[#050508] text-slate-900 dark:text-white flex flex-col relative selection:bg-[#FFE600] selection:text-black transition-colors duration-200">
       {/* Background Dot Matrix */}
-      <div className="fixed inset-0 bg-brutal-grid opacity-35 pointer-events-none" />
+      <div className="fixed inset-0 bg-brutal-grid opacity-20 pointer-events-none" />
 
       {/* Header */}
       <Header
@@ -149,8 +149,8 @@ export default function App() {
         onNavigate={setCurrentView}
       />
 
-      {/* First-Time Welcome Modal */}
-      <WelcomeModal />
+      {/* First-visit app installation prompt */}
+      <InstallPrompt />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-7 z-10">
@@ -174,42 +174,30 @@ export default function App() {
         {currentView === 'about' ? (
           <AboutPage onBackToDetector={() => setCurrentView('detector')} />
         ) : !result ? (
-          <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 pt-1 sm:pt-2">
-            {/* Mission Hero Banner */}
-            <div className="glass-brutal rounded-xl p-4 sm:p-8 relative overflow-hidden shadow-[6px_6px_0px_#000000] sm:shadow-[8px_8px_0px_#000000]">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
-                <div>
-                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                    <span className="px-2.5 sm:px-3 py-1 rounded bg-[#FFE600] text-black font-mono font-black text-[11px] sm:text-xs border-2 border-black shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFFFFF]">
-                      AI FORENSICS
-                    </span>
-                    <span className="px-2.5 sm:px-3 py-1 rounded bg-white dark:bg-[#181824] text-black dark:text-white font-mono font-black text-[11px] sm:text-xs border-2 border-black dark:border-white shadow-[2px_2px_0px_#000000]">
-                      2D-FFT SPEC
-                    </span>
-                  </div>
-
-                  <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black font-mono tracking-tight text-black dark:text-white leading-tight">
-                    Frequency Domain <span className="underline underline-offset-4 decoration-4 text-black dark:text-[#FFE600]">AI Detector</span>
+          <div className="max-w-4xl mx-auto space-y-5 sm:space-y-7 pt-2 sm:pt-4">
+            <section className="inspection-hero glass-brutal rounded-2xl p-6 sm:p-10 relative overflow-hidden">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="w-2 h-2 rounded-full bg-[#059669] dark:bg-[#00F5A0]" />
+                <span className="text-[11px] font-mono font-bold tracking-[0.16em] uppercase text-slate-600 dark:text-slate-300">A closer look at your images</span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                <div className="max-w-xl">
+                  <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-black dark:text-white leading-[1.12]">
+                    See beyond<br /><span className="hero-highlight">the pixels.</span>
                   </h1>
-
-                  <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-100 font-mono mt-2 sm:mt-3 max-w-xl leading-relaxed font-bold">
-                    Computes 2D Fourier log-magnitude harmonic decay to isolate generative latent diffusion VAE upsampling artifacts across Midjourney, ChatGPT (DALL-E 3), Gemini (Imagen 3), and SDXL.
+                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-5 leading-relaxed max-w-md">
+                    Explore image patterns and AI visual analysis in one workspace. Upload an image to compare the signals behind the score.
                   </p>
                 </div>
-
-                <div className="hidden md:flex flex-col items-end text-right font-mono text-xs text-black dark:text-white border-l-2 border-black/30 dark:border-white/40 pl-6 space-y-2">
-                  <span className="px-3 py-1.5 rounded bg-white dark:bg-[#181824] border-2 border-black dark:border-white font-black shadow-brutal-sm text-black dark:text-white">
-                    Multi-Spectral Pipeline
-                  </span>
-                  <span className="px-3 py-1.5 rounded bg-white dark:bg-[#181824] border-2 border-black dark:border-white text-black dark:text-white font-bold shadow-brutal-sm">
-                    40-Dim FFT Harmonics
-                  </span>
-                  <span className="px-3 py-1.5 rounded bg-[#00F5A0] text-black font-black border-2 border-black shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFFFFF]">
-                    Serverless Direct NIM Fallback
-                  </span>
+                <div className="flex sm:flex-col gap-2 shrink-0 flex-wrap">
+                  <span className="hero-engine"><Radio className="w-4 h-4" /> FFT analysis</span>
+                  <span className="hero-engine"><Sparkles className="w-4 h-4" /> Gemma vision</span>
                 </div>
               </div>
-            </div>
+              <div className="hero-workflow mt-8 pt-5 grid grid-cols-3 gap-3 text-[10px] sm:text-xs font-mono font-bold">
+                <span><b>01</b> Upload</span><span><b>02</b> Analyze</span><span><b>03</b> Compare</span>
+              </div>
+            </section>
 
             {/* Dropzone */}
             <Dropzone
@@ -230,30 +218,30 @@ export default function App() {
               <div className="glass-brutal-card rounded-xl p-5 sm:p-6 border-2 border-black dark:border-[#00F0FF] bg-[#F0F9FF] dark:bg-[#0A141A] flex flex-col justify-between min-h-[140px]">
                 <div className="text-xs font-mono font-black text-[#0369A1] dark:text-[#00F0FF] uppercase mb-2.5 flex items-center gap-2">
                   <Radio className="w-4 h-4 stroke-[3]" />
-                  01. 2D Fourier Matrix
+                  01. Frequency patterns
                 </div>
                 <p className="text-xs text-slate-800 dark:text-white font-mono leading-relaxed font-bold">
-                  Translates spatial RGB pixels into continuous 2D frequency harmonics.
+                  Inspect the patterns beneath the image with a 2D frequency spectrum.
                 </p>
               </div>
 
               <div className="glass-brutal-card rounded-xl p-5 sm:p-6 border-2 border-black dark:border-[#00F5A0] bg-[#ECFDF5] dark:bg-[#0A1A14] flex flex-col justify-between min-h-[140px]">
                 <div className="text-xs font-mono font-black text-[#047857] dark:text-[#00F5A0] uppercase mb-2.5 flex items-center gap-2">
                   <Shield className="w-4 h-4 stroke-[3]" />
-                  02. Azimuthal Decay
+                  02. Spectral detail
                 </div>
                 <p className="text-xs text-slate-800 dark:text-white font-mono leading-relaxed font-bold">
-                  Isolates abnormal high-frequency shelves characteristic of neural latent decoders.
+                  Explore frequency decay and texture measurements alongside the original image.
                 </p>
               </div>
 
               <div className="glass-brutal-card rounded-xl p-5 sm:p-6 border-2 border-black dark:border-[#B066FF] bg-[#FAF5FF] dark:bg-[#140A1A] flex flex-col justify-between min-h-[140px]">
                 <div className="text-xs font-mono font-black text-[#6D28D9] dark:text-[#B066FF] uppercase mb-2.5 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 stroke-[3]" />
-                  03. Cloud Consensus
+                  03. Visual reasoning
                 </div>
                 <p className="text-xs text-slate-800 dark:text-white font-mono leading-relaxed font-bold">
-                  Side-by-side consensus validation with NVIDIA DiffusionGemma 26B Vision AI.
+                  Compare your local model with Gemma’s assessment of visible details.
                 </p>
               </div>
             </div>
@@ -270,8 +258,9 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t-2 border-black dark:border-white bg-white dark:bg-black py-4 text-center text-xs text-black dark:text-white font-mono font-black z-10 transition-colors">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <span className="font-black tracking-wide">THE EYES 2.0 • BUILT BY ZEESHAN SARFRAZ</span>
+          <div className="flex flex-col items-center sm:items-start gap-2 text-center sm:text-left">
+            <span className="font-black tracking-wide">THE EYES · BUILT BY FULL STACK FOUR EYES</span>
+            <span className="text-[10px] sm:text-xs font-normal text-slate-500 dark:text-slate-400">Zeeshan Sarfraz · Laiba Badar · Javeria Javaid</span>
             <button
               onClick={() => setCurrentView('about')}
               className="text-[#0284C7] dark:text-[#00F0FF] underline underline-offset-4 decoration-2 hover:text-black dark:hover:text-white transition-colors cursor-pointer font-black"
@@ -280,13 +269,13 @@ export default function App() {
             </button>
           </div>
           <a
-            href="https://github.com/xeeshan-zs/The-Eyes"
+            href="https://github.com/xeeshan-zs/hactoberfest"
             target="_blank"
             rel="noopener noreferrer"
             className="px-3 py-1 rounded bg-[#FFE600] text-black border-2 border-black font-mono font-black flex items-center gap-1.5 shadow-[2px_2px_0px_#000000] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all cursor-pointer"
           >
             <Github className="w-3.5 h-3.5" />
-            <span>github.com/xeeshan-zs/The-Eyes ↗</span>
+            <span>github.com/xeeshan-zs/hactoberfest ↗</span>
           </a>
         </div>
       </footer>

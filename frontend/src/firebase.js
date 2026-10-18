@@ -19,10 +19,12 @@ export const auth = getAuth(app);
 
 // Initialize Analytics if supported by environment
 export let analytics = null;
-if (typeof window !== "undefined") {
+if (typeof window !== "undefined" && navigator.onLine && firebaseConfig.apiKey && firebaseConfig.appId && firebaseConfig.measurementId) {
   isSupported().then((supported) => {
-    if (supported) {
+    if (supported && navigator.onLine) {
       analytics = getAnalytics(app);
     }
+  }).catch(() => {
+    // Analytics is optional and must not prevent the offline app shell from opening.
   });
 }

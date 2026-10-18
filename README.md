@@ -224,3 +224,25 @@ For quota or account work, establish the authoritative service contract and conf
 ## Author and license
 
 Created by **Full Sack Four Eyes**. Licensed under the [MIT License](LICENSE).
+
+## Install The Eyes as an app (PWA)
+
+The frontend now includes a web app manifest, standalone app icons, and a service worker. On the first browser visit, an installation popup appears. Supported browsers offer a native **Install app** button when their installation event is available. Safari on iPhone/iPad gets Share → Add to Home Screen instructions. Dismissing the popup is remembered; the floating **Install app** button can reopen it. The old first-visit API-key popup is replaced by this installation prompt; the header's key controls remain available.
+
+Native installation requires a user action and depends on the browser. It cannot be forced automatically. Installed standalone windows suppress the installation prompt. For deployment, serve the production build over HTTPS; localhost is supported for testing. Ordinary HTTP on a LAN IP is not sufficient.
+
+Test the real PWA build in two steps:
+
+```powershell
+cd frontend
+npm run build
+npm run preview -- --host 127.0.0.1 --port 4173
+```
+
+Open http://127.0.0.1:4173 in a normal Chrome or Edge window. The development server at port 5173 shows the popup UI, but the service worker is deliberately enabled only in production builds. The Firebase Hosting configuration gives hashed assets long-lived caching and makes the service worker, manifest, and index revalidate. No hosting deployment was performed.
+
+After a successful online load, the interface can reopen offline. **Image analysis still requires connectivity.** Only application files and icons are precached; uploads, API responses, and credentials are not added to the service-worker cache. Optional Firebase Analytics initialization is skipped offline. New app versions offer an Update action, warning that a reload clears the currently selected image.
+
+To repeat the first-visit prompt during development, remove only `the_eyes_install_prompt_seen_v1` from this site's local storage. Installation/dismissal state is specific to the browser and origin.
+
+Verification: production build passed; a fresh isolated Edge profile reported no manifest/installability errors. Service-worker activation, offline reload, cache contents, first-visit popup, remembered dismissal, reopening, and standalone suppression passed browser checks without page errors. The native install callback was simulated; no OS app was installed by automation. iPhone instructions were checked through browser emulation, not on a physical iPhone. Actual browser/OS installation remains a manual check.

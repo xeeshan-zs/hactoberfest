@@ -53,7 +53,7 @@ export default function ImageComparisonSlider({ originalImage, fftImage, filenam
           <span className="px-2.5 sm:px-3 py-1 rounded bg-[#FFE600] text-black font-mono font-black text-xs border-2 border-black shadow-[2px_2px_0px_#FFFFFF]">
             SPLIT LENS
           </span>
-          <span className="text-xs font-mono font-black text-white uppercase tracking-wide">
+          <span className="text-xs font-mono font-black text-black dark:text-white uppercase tracking-wide">
             Spatial ↔ 2D FFT Harmonics
           </span>
         </div>

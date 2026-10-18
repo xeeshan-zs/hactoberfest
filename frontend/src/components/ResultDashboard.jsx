@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Eye, Activity, Crosshair, ArrowRightLeft, Sliders, LineChart, Download, Copy, Check } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Eye, Crosshair, Plus, Sliders, LineChart, Download, Copy, Check, FileImage } from 'lucide-react';
 import VerdictBadge from './VerdictBadge';
 import ApiComparison from './ApiComparison';
 import RadialProfileChart from './RadialProfileChart';
@@ -7,214 +7,77 @@ import ImageComparisonSlider from './ImageComparisonSlider';
 import ForensicMetrics from './ForensicMetrics';
 
 export default function ResultDashboard({ result, originalImagePreview, onReset }) {
-  const [activeTab, setActiveTab] = useState('dual'); // 'dual' | 'slider' | 'chart'
-  const [copied, setCopied] = useState(false);
-  const [showReticle, setShowReticle] = useState(true);
-
+  const [activeTab, setActiveTab] = useState('dual');
+  const [copyStatus, setCopyStatus] = useState('');
+  const [showReticle, setShowReticle] = useState(false);
+  const copyTimer = useRef(null);
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
   if (!result) return null;
-
-  const isFake = result.prediction?.toLowerCase() === 'fake' || result.prediction?.toLowerCase() === 'ai';
-
-  const handleCopyJson = () => {
-    navigator.clipboard.writeText(JSON.stringify(result, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleDownloadSpectrum = () => {
+  const isFake = ['fake', 'ai'].includes(result.prediction?.toLowerCase());
+  const illustrative = result.ensemble?.active_engine === 'NIM_BROWSER_DIRECT';
+  const dimensions = result.diagnostics?.dimensions;
+  const tabs = [
+    { id: 'dual', label: 'Side by side', icon: Eye },
+    { id: 'slider', label: 'Split view', icon: Sliders },
+    { id: 'chart', label: 'Frequency chart', icon: LineChart },
+  ];
+  async function copyJson() {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(result, null, 2));
+      setCopyStatus('Copied');
+    } catch { setCopyStatus('Copy failed. Check browser clipboard permissions.'); }
+    clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopyStatus(''), 3500);
+  }
+  function downloadSpectrum() {
     if (!result.fft_spectrum_image) return;
     const link = document.createElement('a');
     link.href = result.fft_spectrum_image;
     link.download = `fft_spectrum_${result.filename || 'image'}.png`;
     link.click();
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* 1. Hero Verdict Badge */}
-      <VerdictBadge result={result} />
-
-      {/* 2. Forensic Metrics */}
-      <ForensicMetrics result={result} />
-
-      {/* 3. Studio Multi-Lens Container */}
-      <div className="glass-brutal rounded-xl overflow-hidden shadow-[6px_6px_0px_#000000] sm:shadow-[8px_8px_0px_#000000]">
-        {/* Toolbar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-3.5 sm:px-5 py-3 sm:py-4 bg-white dark:bg-black border-b-2 border-black dark:border-white">
-          {/* Mode Switcher Tabs */}
-          <div className="grid grid-cols-3 gap-1.5 sm:flex sm:items-center sm:gap-2.5 w-full sm:w-auto">
-            <button
-              onClick={() => setActiveTab('dual')}
-              className={`px-2.5 sm:px-4 py-2 rounded-lg text-xs font-mono font-black border-2 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer ${
-                activeTab === 'dual'
-                  ? 'bg-[#FFE600] text-black border-black shadow-[2px_2px_0px_#000000] sm:shadow-[3px_3px_0px_#000000] dark:shadow-[2px_2px_0px_#FFFFFF]'
-                  : 'bg-white dark:bg-[#181824] text-black dark:text-white border-black dark:border-white hover:bg-[#FFE600] hover:text-black'
-              }`}
-            >
-              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />
-              <span className="truncate">DUAL GRID</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('slider')}
-              className={`px-2.5 sm:px-4 py-2 rounded-lg text-xs font-mono font-black border-2 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer ${
-                activeTab === 'slider'
-                  ? 'bg-[#FFE600] text-black border-black shadow-[2px_2px_0px_#000000] sm:shadow-[3px_3px_0px_#000000] dark:shadow-[2px_2px_0px_#FFFFFF]'
-                  : 'bg-white dark:bg-[#181824] text-black dark:text-white border-black dark:border-white hover:bg-[#FFE600] hover:text-black'
-              }`}
-            >
-              <Sliders className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />
-              <span className="truncate">SPLIT</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('chart')}
-              className={`px-2.5 sm:px-4 py-2 rounded-lg text-xs font-mono font-black border-2 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer ${
-                activeTab === 'chart'
-                  ? 'bg-[#FFE600] text-black border-black shadow-[2px_2px_0px_#000000] sm:shadow-[3px_3px_0px_#000000] dark:shadow-[2px_2px_0px_#FFFFFF]'
-                  : 'bg-white dark:bg-[#181824] text-black dark:text-white border-black dark:border-white hover:bg-[#FFE600] hover:text-black'
-              }`}
-            >
-              <LineChart className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />
-              <span className="truncate">1D DECAY</span>
-            </button>
-          </div>
-
-          {/* Action Toolbar */}
-          <div className="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2.5 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-black/10 dark:border-white/10">
-            <button
-              onClick={handleCopyJson}
-              className="flex-1 sm:flex-initial px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-white dark:bg-[#181824] text-black dark:text-white border-2 border-black dark:border-white hover:bg-[#FFE600] hover:text-black hover:border-black text-xs font-mono font-black flex items-center justify-center gap-1 sm:gap-1.5 shadow-[2px_2px_0px_#000000] cursor-pointer"
-              title="Copy JSON Payload"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-[#059669] stroke-[3]" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'COPIED' : 'JSON'}</span>
-            </button>
-
-            <button
-              onClick={handleDownloadSpectrum}
-              className="flex-1 sm:flex-initial px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-white dark:bg-[#181824] text-black dark:text-white border-2 border-black dark:border-white hover:bg-[#FFE600] hover:text-black hover:border-black text-xs font-mono font-black flex items-center justify-center gap-1 sm:gap-1.5 shadow-[2px_2px_0px_#000000] cursor-pointer"
-              title="Download FFT PNG"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>EXPORT FFT</span>
-            </button>
-
-            <button
-              onClick={onReset}
-              className="flex-1 sm:flex-initial px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-[#FFE600] text-black border-2 border-black text-xs font-mono font-black flex items-center justify-center gap-1 sm:gap-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFFFFF] cursor-pointer"
-            >
-              <ArrowRightLeft className="w-3.5 h-3.5 stroke-[3]" />
-              <span className="truncate">NEW</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Viewport Content */}
-        <div className="p-3.5 sm:p-6">
-          {activeTab === 'slider' && (
-            <ImageComparisonSlider
-              originalImage={originalImagePreview}
-              fftImage={result.fft_spectrum_image}
-              filename={result.filename}
-            />
-          )}
-
-          {activeTab === 'dual' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left: Input Image */}
-              <div className="glass-brutal-card rounded-xl p-5 flex flex-col justify-between border-2 border-black dark:border-white shadow-[6px_6px_0px_#000000] bg-white dark:bg-[#14141E]">
-                <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b-2 border-black/10 dark:border-white/20">
-                  <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 rounded bg-[#00F5A0] text-black font-mono font-black text-xs border-2 border-black shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFFFFF]">
-                      SPATIAL
-                    </span>
-                    <span className="text-xs font-mono font-black text-black dark:text-white uppercase tracking-wide">
-                      Pixel Domain (RGB)
-                    </span>
-                  </div>
-                  <span className="text-xs font-mono font-black text-black dark:text-white truncate max-w-[200px] bg-slate-100 dark:bg-black px-2.5 py-0.5 rounded border border-black dark:border-white/50">
-                    {result.filename || 'image.png'}
-                  </span>
-                </div>
-
-                <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-black border-2 border-black dark:border-white flex items-center justify-center">
-                  <img
-                    src={originalImagePreview}
-                    alt="Input"
-                    className="w-full h-full object-contain"
-                  />
-                  <div className="absolute bottom-3 left-3 bg-black px-3 py-1.5 rounded text-xs font-mono font-black text-[#00F5A0] border-2 border-[#00F5A0] shadow-[3px_3px_0px_#000000]">
-                    RGB Matrix
-                  </div>
-                </div>
-
-                <p className="mt-4 text-xs text-slate-800 dark:text-white font-mono leading-relaxed font-bold">
-                  Natural human visual domain. High-frequency neural upsampling and latent noise are often imperceptible to the naked eye.
-                </p>
-              </div>
-
-              {/* Right: FFT Spectrum */}
-              <div className="glass-brutal-card rounded-xl p-5 flex flex-col justify-between border-2 border-black dark:border-white shadow-[6px_6px_0px_#000000] bg-white dark:bg-[#14141E]">
-                <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b-2 border-black/10 dark:border-white/20">
-                  <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 rounded bg-[#00F0FF] text-black font-mono font-black text-xs border-2 border-black shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFFFFF]">
-                      SPECTRAL
-                    </span>
-                    <span className="text-xs font-mono font-black text-black dark:text-white uppercase tracking-wide">
-                      2D FFT Magnitude Spectrum
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setShowReticle(!showReticle)}
-                    className="text-xs font-mono font-black text-black dark:text-[#FFE600] bg-slate-100 dark:bg-black px-2.5 py-1 rounded border-2 border-black dark:border-white hover:bg-[#FFE600] hover:text-black transition-colors flex items-center gap-1.5 shadow-[1px_1px_0px_#000000]"
-                  >
-                    <Crosshair className="w-4 h-4 stroke-[3]" />
-                    <span>{showReticle ? 'RETICLE: ON' : 'RETICLE: OFF'}</span>
-                  </button>
-                </div>
-
-                <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-black border-2 border-black dark:border-white flex items-center justify-center">
-                  <img
-                    src={result.fft_spectrum_image}
-                    alt="FFT Spectrum"
-                    className="w-full h-full object-contain"
-                  />
-
-                  {/* Reticle Guides */}
-                  {showReticle && (
-                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                      <div className="w-full h-[2px] bg-[#00F0FF]/50" />
-                      <div className="h-full w-[2px] bg-[#00F0FF]/50 absolute" />
-                      <div className="w-1/3 h-1/3 rounded-full border-2 border-[#00F0FF]/50 absolute" />
-                      <div className="w-2/3 h-2/3 rounded-full border-2 border-[#00F0FF]/40 absolute" />
-                      <div className="w-[95%] h-[95%] rounded-full border-2 border-dashed border-[#00F0FF]/35 absolute" />
-                    </div>
-                  )}
-
-                  <div className="absolute bottom-3 left-3 bg-black px-3 py-1.5 rounded text-xs font-mono font-black text-[#00F0FF] border-2 border-[#00F0FF] shadow-[3px_3px_0px_#000000]">
-                    Inferno Spectrum log(1+|F(u,v)|)
-                  </div>
-                </div>
-
-                <p className="mt-4 text-xs text-slate-800 dark:text-white font-mono leading-relaxed font-bold">
-                  Centered zero frequency (DC). Latent diffusion &amp; GAN models manifest elevated energy shelves along outer radii and periodic harmonic cross-spikes.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'chart' && (
-            <RadialProfileChart
-              diagnostics={result.diagnostics}
-              isFake={isFake}
-            />
-          )}
+  }
+  return <div className="results-workspace space-y-5 sm:space-y-6">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 pb-1">
+      <div className="min-w-0"><p className="results-kicker mb-2">Your inspection report</p><h1 className="flex items-center gap-2 text-lg sm:text-xl font-bold tracking-tight min-w-0"><FileImage className="w-5 h-5 text-slate-400 shrink-0" /><span className="truncate" title={result.filename}>{result.filename || 'Uploaded image'}</span></h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">{dimensions?.length === 2 ? `${dimensions[0]} × ${dimensions[1]} pixels` : 'Image inspection'}{typeof result.file_size_kb === 'number' ? ` · ${result.file_size_kb} KB` : ''}</p>
+      </div>
+      <button onClick={onReset} className="btn-brutal-yellow px-4 py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 shrink-0"><Plus className="w-4 h-4" />New inspection</button>
+    </div>
+    <VerdictBadge result={result} />
+    {illustrative && <p className="result-inline-notice">Browser fallback: the spectrum and diagnostics shown here are illustrative. The vision response is the available model analysis.</p>}
+    <ForensicMetrics result={result} />
+    <ApiComparison result={result} />
+    <section className="results-panel !p-0 overflow-hidden" aria-labelledby="image-inspection-title">
+      <div className="flex flex-wrap items-start justify-between gap-4 p-5 sm:p-6 border-b border-black/10 dark:border-white/10">
+        <div><p className="results-kicker mb-2">Explore the evidence</p><h2 id="image-inspection-title" className="text-xl font-bold tracking-tight">Look at the image, then its patterns.</h2></div>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={copyJson} className="results-button">{copyStatus === 'Copied' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}{copyStatus === 'Copied' ? 'Copied' : 'Copy JSON'}</button>
+          <button onClick={downloadSpectrum} disabled={!result.fft_spectrum_image} className="results-button"><Download className="w-4 h-4" />Export spectrum</button>
         </div>
       </div>
-
-      {/* 4. Commercial Consensus */}
-      <ApiComparison result={result} />
-    </div>
-  );
+      {copyStatus && <p role="status" className="px-5 pt-3 text-xs text-slate-500 dark:text-slate-400">{copyStatus}</p>}
+      <div className="p-4 sm:p-6">
+        <div className="result-tabs mb-5" aria-label="Image inspection views">
+          {tabs.map(({ id, label, icon: Icon }) => <button key={id} onClick={() => setActiveTab(id)} aria-pressed={activeTab === id} className="result-tab"><Icon className="w-4 h-4 shrink-0" /><span>{label}</span></button>)}
+        </div>
+        {activeTab === 'dual' && <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <figure className="min-w-0">
+            <figcaption className="flex items-center justify-between gap-2 mb-3 min-h-9"><h3 className="text-sm font-semibold">Original image</h3><span className="results-kicker">RGB</span></figcaption>
+            <div className="result-image"><img src={originalImagePreview} alt="Uploaded image" className="w-full h-full object-contain" /></div>
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">The original view, preserved for your own visual inspection.</p>
+          </figure>
+          <figure className="min-w-0">
+            <figcaption className="flex flex-wrap items-center justify-between gap-2 mb-3 min-h-9"><h3 className="text-sm font-semibold">Frequency spectrum</h3><button onClick={() => setShowReticle(!showReticle)} aria-pressed={showReticle} className="results-button !py-1.5 !text-[10px]"><Crosshair className="w-3.5 h-3.5" />{showReticle ? 'Hide guides' : 'Show guides'}</button></figcaption>
+            <div className="result-image relative">
+              {result.fft_spectrum_image ? <img src={result.fft_spectrum_image} alt={illustrative ? 'Illustrative frequency visualization' : 'Computed FFT frequency spectrum'} className="w-full h-full object-contain" /> : <p className="p-5 text-sm text-slate-400">No spectrum returned.</p>}
+              {showReticle && <div className="absolute inset-0 pointer-events-none flex items-center justify-center" aria-hidden="true"><div className="w-full h-px bg-cyan-300/60" /><div className="absolute h-full w-px bg-cyan-300/60" /><div className="absolute w-2/3 h-2/3 rounded-full border border-cyan-300/60" /><div className="absolute w-1/3 h-1/3 rounded-full border border-cyan-300/60" /></div>}
+            </div>
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{illustrative ? 'An illustrative rendering from the browser fallback.' : 'Brightness represents frequency magnitude. Patterns alone cannot establish an image’s source.'}</p>
+          </figure>
+        </div>}
+        {activeTab === 'slider' && <ImageComparisonSlider originalImage={originalImagePreview} fftImage={result.fft_spectrum_image} filename={result.filename} />}
+        {activeTab === 'chart' && (result.diagnostics?.radial_profile?.length > 1 ? <RadialProfileChart diagnostics={result.diagnostics} isFake={isFake} /> : <p className="text-sm text-slate-500 dark:text-slate-400 py-8 text-center">No frequency profile was returned for this image.</p>)}
+      </div>
+    </section>
+  </div>;
 }

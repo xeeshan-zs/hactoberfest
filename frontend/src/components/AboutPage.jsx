@@ -61,73 +61,46 @@ export default function AboutPage({ onBackToDetector }) {
         </div>
       </div>
 
-      {/* Creator Profile Section */}
-      <div className="glass-brutal-card rounded-xl p-5 sm:p-8 border-2 border-black dark:border-white shadow-[5px_5px_0px_#000000] sm:shadow-[6px_6px_0px_#000000] bg-white dark:bg-[#14141E]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 pb-5 sm:pb-6 border-b-2 border-black/10 dark:border-white/20">
-          <div className="flex items-start gap-3 sm:gap-4">
-            <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-xl bg-[#FFE600] border-2 border-black shadow-[3px_3px_0px_#000000] sm:shadow-[4px_4px_0px_#000000] dark:shadow-[3px_3px_0px_#FFFFFF] flex items-center justify-center font-mono font-black text-xl sm:text-2xl text-black flex-shrink-0">
-              ⚡
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-xl sm:text-3xl font-black font-mono text-black dark:text-white">
-                  Zeeshan Sarfraz
-                </h2>
-                <span className="text-[10px] sm:text-[11px] font-mono font-black px-2 py-0.5 rounded bg-[#00F0FF] text-black border border-black shadow-[1px_1px_0px_#000000]">
-                  CREATOR &amp; ML RESEARCHER
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-mono mt-1 font-bold leading-relaxed">
-                Builder specializing in Computer Vision, Multi-Spectral Digital Forensics, and Machine Learning Systems.
-              </p>
-            </div>
+      {/* Team credits */}
+      <section className="glass-brutal-card rounded-2xl p-5 sm:p-8 bg-white dark:bg-[#14141E]">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5 pb-6 border-b border-black/10 dark:border-white/15">
+          <div>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-[.16em] text-slate-500 dark:text-slate-400 mb-2">Made by the team</p>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Full Stack Four Eyes</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-3 leading-relaxed max-w-xl">The team behind The Eyes, bringing image inspection and visual AI into one workspace.</p>
           </div>
-
-          {/* High-Affordance Interactive Links */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 font-mono text-xs font-black w-full sm:w-auto">
-            <a
-              href="https://github.com/xeeshan-zs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-brutal-yellow px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 border-2 border-black shadow-[3px_3px_0px_#000000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all cursor-pointer"
-            >
-              <Github className="w-4 h-4 stroke-[2.5]" />
-              <span>GITHUB PROFILE</span>
-              <ExternalLink className="w-3.5 h-3.5 stroke-[3]" />
-            </a>
-
-            <a
-              href="https://github.com/xeeshan-zs/The-Eyes"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2.5 rounded-lg bg-[#00F0FF] text-black border-2 border-black font-black flex items-center justify-center gap-2 shadow-[3px_3px_0px_#000000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all cursor-pointer"
-            >
-              <Code2 className="w-4 h-4 stroke-[2.5]" />
-              <span>OPEN REPOSITORY</span>
-              <ExternalLink className="w-3.5 h-3.5 stroke-[3]" />
-            </a>
-          </div>
+          <a href="https://github.com/xeeshan-zs/hactoberfest" target="_blank" rel="noopener noreferrer" className="btn-brutal-yellow px-4 py-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shrink-0"><Github className="w-4 h-4" /> Open repository <ExternalLink className="w-3.5 h-3.5" /></a>
         </div>
+        <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6" aria-label="Team members">
+          {[
+            ['ZS', 'Zeeshan Sarfraz'],
+            ['LB', 'Laiba Badar'],
+            ['JJ', 'Javeria Javaid'],
+          ].map(([initials, name]) => <li key={name} className="flex items-center gap-3 rounded-xl p-4 bg-slate-50 dark:bg-white/5 border border-black/10 dark:border-white/10">
+            <span className="w-10 h-10 rounded-xl bg-[#FFE600] text-black grid place-items-center text-xs font-black shrink-0">{initials}</span>
+            <span className="text-sm font-semibold">{name}</span>
+          </li>)}
+        </ul>
 
         {/* Hardware & Training Pipeline Stats - Spacious Padding */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
           <div className="p-5 sm:p-6 rounded-lg bg-[#F8F9FA] dark:bg-black border-2 border-black dark:border-white shadow-[3px_3px_0px_#000000] flex flex-col justify-between min-h-[140px]">
             <div className="flex items-center gap-2 text-xs font-mono font-black text-[#B45309] dark:text-[#FFE600] mb-2">
               <Database className="w-4 h-4 stroke-[3]" />
-              50 GB TRAINING DATASET
+              LOCAL FREQUENCY ANALYSIS
             </div>
             <p className="text-xs text-slate-800 dark:text-slate-200 font-mono font-bold leading-relaxed">
-              Curated across 140,000+ authentic DSLR exposures and generative diffusion samples.
+              A 40-feature fingerprint summarizes image frequency and color-channel patterns.
             </p>
           </div>
 
           <div className="p-5 sm:p-6 rounded-lg bg-[#F8F9FA] dark:bg-black border-2 border-black dark:border-white shadow-[3px_3px_0px_#000000] flex flex-col justify-between min-h-[140px]">
             <div className="flex items-center gap-2 text-xs font-mono font-black text-[#047857] dark:text-[#00F5A0] mb-2">
               <Cpu className="w-4 h-4 stroke-[3]" />
-              RTX 3090 GPU PIPELINE
+              REACT + FASTAPI
             </div>
             <p className="text-xs text-slate-800 dark:text-slate-200 font-mono font-bold leading-relaxed">
-              Accelerated high-throughput 2D Fast Fourier Transform feature extraction and cross-validation.
+              A web interface and Python backend connect uploads, analysis, and visual results.
             </p>
           </div>
 
@@ -141,7 +114,7 @@ export default function AboutPage({ onBackToDetector }) {
             </p>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Engineering Deep-Dive Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -222,21 +195,21 @@ export default function AboutPage({ onBackToDetector }) {
         </div>
 
         <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-100 font-mono leading-relaxed font-bold mb-4">
-          To achieve robust resilience against both photorealistic synthetic images and noisy real-world screenshots, the system mathematically averages both detection layers:
+          When both models are available, Gemma contributes 80% and the local classifier contributes 20% of the combined score:
         </p>
 
         <div className="p-4 rounded-xl bg-black text-white font-mono font-black text-sm border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] overflow-x-auto">
-          <span className="text-[#00F5A0]">P(Fake)_Ensemble</span> = <span className="text-[#00F0FF]">0.50 × P(Fake)_Fourier</span> + <span className="text-[#FFE600]">0.50 × P(Fake)_NVIDIA_Vision</span>
+          <span className="text-[#00F5A0]">P(Fake)_Ensemble</span> = <span className="text-[#00F0FF]">0.20 × P(Fake)_Fourier</span> + <span className="text-[#FFE600]">0.80 × P(Fake)_NVIDIA_Vision</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200">
           <div className="flex items-start gap-2">
             <span className="text-[#059669] dark:text-[#00F5A0] font-black">✓</span>
-            <span>Eliminates false positives on compressed screenshots through semantic validation.</span>
+            <span>Model disagreement is shown alongside the combined score.</span>
           </div>
           <div className="flex items-start gap-2">
             <span className="text-[#059669] dark:text-[#00F5A0] font-black">✓</span>
-            <span>Catches photorealistic AI portraits through sub-pixel Fourier frequency shelf detection.</span>
+            <span>Scores are inspection signals and cannot establish authenticity on their own.</span>
           </div>
         </div>
       </div>

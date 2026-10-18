@@ -107,7 +107,7 @@ export default function Header({
 
             {/* GitHub Repo Link */}
             <a
-              href="https://github.com/xeeshan-zs/The-Eyes"
+              href="https://github.com/xeeshan-zs/hactoberfest"
               target="_blank"
               rel="noopener noreferrer"
               className="p-1.5 rounded-md bg-white dark:bg-[#181824] border-2 border-black dark:border-white shadow-[2px_2px_0px_#000000] text-black dark:text-white hover:bg-[#FFE600] hover:text-black hover:border-black transition-all"

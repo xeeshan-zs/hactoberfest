@@ -1,222 +1,186 @@
 <div align="center">
 
-# 👁️ THE EYES
-### Forensic 2D FFT Frequency Fingerprint Classifier for AI-Generated Images
+# THE EYES
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Scikit-Learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+### Look beneath the surface.
 
-<p align="center">
-  <b>A forensic-grade, dark-mode full-stack web application designed for detecting synthetic AI imagery (GANs, Diffusion models, Midjourney, DALL-E, SDXL) via 2D Fast Fourier Transform (FFT) frequency fingerprinting and azimuthal radial power spectrum decay analysis.</b>
-</p>
+Image forensics through Fourier analysis, spectral patterns, and model comparison.
+
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Python-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-EDB56D)](LICENSE)
+
+[Get started](#getting-started) · [Features](#features) · [Current status](#current-status) · [Configuration](#configuration)
 
 </div>
 
 ---
 
-## 🔬 Scientific Core: How It Works
+The Eyes examines signals associated with AI-generated imagery. It combines frequency-domain analysis with available vision-model responses and presents the evidence in an interactive forensic workspace.
 
-Generative neural networks (GANs and Latent Diffusion Models) synthesize images through transposed convolutions and spatial upsampling. These architectures inevitably leave **periodic high-frequency harmonic grid artifacts** across the frequency domain that are imperceptible in the spatial RGB pixel matrix, but strikingly evident under **2D Fourier spectral analysis**.
+## Features
 
-```
-                        ┌──────────────────────────────┐
-                        │   Spatial RGB Input Image    │
-                        └──────────────┬───────────────┘
-                                       │
-                                       ▼
-                 ┌───────────────────────────────────────────┐
-                 │    2D Fast Fourier Transform (FFT-2D)     │
-                 │      F(u,v) = ∬ f(x,y) e^{-j2π(ux+vy)}    │
-                 └─────────────────────┬─────────────────────┘
-                                       │
-                                       ▼
-                 ┌───────────────────────────────────────────┐
-                 │     Centered Log-Magnitude Spectrum       │
-                 │         S(u,v) = log(1 + |F(u,v)|)        │
-                 └─────────────────────┬─────────────────────┘
-                                       │
-                    ┌──────────────────┴──────────────────┐
-                    ▼                                     ▼
-     ┌─────────────────────────────┐       ┌─────────────────────────────┐
-     │  1D Azimuthal Radial Decay  │       │   Inferno Visual Spectrum   │
-     │      Profile Extraction     │       │    PNG Data URI Generator   │
-     └──────────────┬──────────────┘       └─────────────────────────────┘
-                    │
-                    ▼
-     ┌─────────────────────────────┐
-     │  Scikit-Learn Classifier    │
-     │  (SVM / Random Forest Model)│
-     └──────────────┬──────────────┘
-                    │
-                    ▼
-     ┌─────────────────────────────┐
-     │   Forensic Classification   │
-     │   AUTHENTIC  vs.  SYNTHETIC │
-     └─────────────────────────────┘
+- **Frequency analysis:** inspect a 2D Fourier log-magnitude spectrum and radial power profile.
+- **Spectral diagnostics:** explore high-frequency energy, entropy, image dimensions, and processing time.
+- **Model comparison:** review local classification alongside NVIDIA vision analysis and optional Sightengine results when configured.
+- **Interactive inspection:** compare the original image with its spectrum and explore the result dashboard.
+- **Image input:** choose, drop, or paste an image into the analyzer.
+- **Benchmark presets:** run existing generated test patterns through the analysis flow.
+- **Browser fallback:** if the backend is unreachable, the frontend can attempt a direct-to-NVIDIA analysis path when configured.
+
+Classification is an estimate, not proof of an image’s origin. Interpret it alongside the diagnostics and other evidence. No accuracy or latency benchmark is asserted here.
+
+## Current status
+
+- **Guest quota:** no authoritative quota API or shared contract exists in this repository. The app does not enforce a five-check limit or invent a remaining-check count.
+- **Authentication:** `frontend/src/firebase.js` initializes the shared Firebase app and exports its Auth instance for future account flows. Sign-up and sign-in routes are not implemented, and enabled providers are not documented.
+- **Analysis:** uploads use the existing backend request and browser fallback. Successful analysis requires the applicable services and configuration to be available.
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 18 or later, with npm
+- Python 3.10 or later for the local API
+- Firebase web app configuration for the frontend
+- Optional NVIDIA and Sightengine credentials for cloud integrations
+
+### Frontend
+
+From the repository root:
+
+```powershell
+cd frontend
+npm.cmd ci
+Copy-Item .env.example .env.local
 ```
 
-1. **2D Continuous Fourier Transform**: The grayscale spatial representation $f(x, y)$ is transformed into the frequency plane $F(u, v)$ with the zero-frequency DC component shifted to the center.
-2. **Log-Magnitude Spectrum**: Computes $S(u, v) = \log(1 + |F(u, v)|)$ and maps it to a normalized dynamic range with an `inferno` colormap.
-3. **1D Azimuthal Radial Integration**: Averages circular frequency bands from radius $r=0$ (DC component) to $r=r_{\max}$ (Nyquist frequency $\pi$), generating a 1D spectral energy profile.
-4. **Natural $1/f^\alpha$ Power-Law vs. Synthetic Anomalies**:
-   - **Authentic Photos**: Obey natural optical statistics with smooth, asymptotic exponential decay ($1/f^2$).
-   - **AI-Generated Images**: Exhibit distinct high-frequency energy shelves, periodic spectral spikes, and elevated residual ratios near the Nyquist limit.
+Fill in your Firebase web settings in `frontend/.env.local`. To use the local API, set:
 
----
-
-## ✨ Features
-
-- 🖥️ **Forensic Precision Terminal UI**: Built following the **UI-UX Pro Max** design system with a high-contrast dark theme, crisp grid borders, and surgical typography (`Inter` + `JetBrains Mono`).
-- ⚡ **Zero-Cloud Privacy & Low Latency**: Core inference runs locally in under `50ms` using scikit-learn without uploading your images to third-party servers.
-- 🎚️ **Interactive Spatial ↔ Spectral Split Wiper**: Drag-to-wipe comparison slider inspecting original pixels directly against the 2D FFT spectrum with live $(u, v)$ frequency coordinate tracking.
-- 📈 **1D Azimuthal Radial Power Spectrum Chart**: Real-time interactive SVG curve plotting empirical frequency decay against the theoretical natural $1/f^\alpha$ optical baseline with Nyquist anomaly zone highlights.
-- 🧪 **1-Click Preset Benchmark Suite**: Includes pre-calibrated test cases (*DSLR Camera Portrait*, *Natural Landscape*, *Midjourney v6 Portrait*, *SDXL Diffusion Render*) for instant live demo presentation.
-- 🌐 **Commercial Cloud API Benchmarking**: Optional integration with **Sightengine GenAI API** (`https://api.sightengine.com/1.0/check.json`) for live side-by-side consensus validation.
-- 📊 **Numerical Forensic Telemetry**: Real-time readouts for **High-Frequency Residual Energy Ratio**, **Spectral Entropy ($H$)**, **Image Resolution Matrix**, and **Processing Latency**.
-- 📋 **Forensic Export Tools**: Export high-res 2D FFT spectra as PNG or copy complete forensic JSON telemetry payloads with one click.
-
----
-
-## 📁 Repository Structure
-
+```dotenv
+VITE_API_URL=http://localhost:8000
 ```
-the eyes/
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py                 # FastAPI backend, CORS, /predict endpoint
-│   │   ├── feature_extractor.py    # extract_fingerprint, FFT spectrum & diagnostics
-│   │   └── sightengine_service.py  # Sightengine GenAI API client
-│   ├── .env.example                # Sample environment variables
-│   ├── requirements.txt            # Python dependencies
-│   └── model.pkl                   # (Optional location for trained model)
-│
+
+The example environment file points to a hosted API. Change it explicitly if you intend to run analysis locally.
+
+Start the development server:
+
+```powershell
+npm.cmd run dev
+```
+
+Open **[localhost:5173](http://localhost:5173)**.
+
+On macOS or Linux, use `npm` instead of `npm.cmd` and `cp` instead of `Copy-Item`. Restart Vite after changing environment variables.
+
+The analyzer UI can be reviewed without starting Python. Image analysis needs a working API or the existing configured browser fallback.
+
+### Local API
+
+In a separate terminal, from the repository root:
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Add any cloud-service credentials you intend to use, then start the server:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
+```
+
+On macOS or Linux, use `.venv/bin/python` instead of `.\.venv\Scripts\python.exe`.
+
+- API health: [localhost:8000/health](http://localhost:8000/health)
+- Interactive API documentation: [localhost:8000/docs](http://localhost:8000/docs)
+
+The backend searches for serialized model files (`model.pkl` or `ai_detector_svm.pkl`) at startup. Check `/health` to confirm whether a model loaded and which optional integrations are configured.
+
+## Configuration
+
+Keep local environment files out of Git. Both example files contain placeholders only.
+
+### Frontend — `frontend/.env.local`
+
+```dotenv
+VITE_API_URL=http://localhost:8000
+VITE_FIREBASE_API_KEY=your_firebase_web_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_web_app_id
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+```
+
+`frontend/src/firebase.js` initializes the shared Firebase app and exports its Auth instance. Reuse that instance for future account flows. Do not initialize another app or assume a provider is enabled.
+
+Vite embeds `VITE_` variables in browser code. Use them for the intended public web configuration, never for service-account credentials or private service keys. Configure NVIDIA credentials on the backend for server-side requests.
+
+### Backend — `backend/.env`
+
+```dotenv
+NVIDIA_API_KEY=your_nvidia_api_key
+SIGHTENGINE_API_USER=your_sightengine_user_id
+SIGHTENGINE_API_SECRET=your_sightengine_api_secret
+```
+
+Cloud results depend on credentials, provider availability, and network access. Images can be sent to configured external providers during analysis; this project does not promise local-only processing.
+
+## Analysis workflow
+
+1. **Select an image.** Upload, drag and drop, paste, or choose an existing benchmark pattern.
+2. **Request analysis.** The frontend sends the file to the backend’s `/predict` endpoint.
+3. **Extract evidence.** The backend computes the Fourier spectrum, spectral diagnostics, and available local-model prediction.
+4. **Compare available models.** Configured NVIDIA and Sightengine integrations contribute additional responses.
+5. **Review the result.** The result dashboard displays the returned classification and supporting diagnostics.
+
+The frontend also contains an existing direct-to-NVIDIA browser fallback for backend failures. Its availability depends on its configuration and browser/network restrictions. It does not implement guest-quota enforcement.
+
+## Project structure
+
+```text
+.
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Header.jsx                # System status bar with live telemetry
-│   │   │   ├── Dropzone.jsx              # Drag-and-drop / paste image zone
-│   │   │   ├── SamplePresets.jsx         # 1-click test benchmark suite
-│   │   │   ├── VerdictBadge.jsx          # Hero REAL vs AI-GENERATED verdict
-│   │   │   ├── ForensicMetrics.jsx       # Diagnostic numerical readouts
-│   │   │   ├── RadialProfileChart.jsx    # 1D Azimuthal radial decay chart
-│   │   │   ├── ImageComparisonSlider.jsx # Interactive split wiper slider
-│   │   │   ├── ApiComparison.jsx         # Model vs Sightengine comparison card
-│   │   │   └── ResultDashboard.jsx       # Unified multi-mode workspace
-│   │   ├── App.jsx                       # Application state & routing
-│   │   ├── main.jsx                      # React entrypoint
-│   │   └── index.css                     # Tailwind CSS & animations
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── postcss.config.js
-│
-├── ai_detector_svm.pkl             # Pre-trained SVM model weights
-├── .gitignore
-└── README.md
+│   │   │   ├── Header.jsx
+│   │   │   ├── Dropzone.jsx
+│   │   │   ├── SamplePresets.jsx
+│   │   │   ├── ResultDashboard.jsx
+│   │   │   ├── VerdictBadge.jsx
+│   │   │   ├── ForensicMetrics.jsx
+│   │   │   ├── RadialProfileChart.jsx
+│   │   │   ├── ImageComparisonSlider.jsx
+│   │   │   ├── ApiComparison.jsx
+│   │   │   ├── AboutPage.jsx
+│   │   │   └── WelcomeModal.jsx
+│   │   ├── services/
+│   │   │   └── nimClientFallback.js   # Browser analysis fallback
+│   │   ├── App.jsx                    # View state and analysis orchestration
+│   │   ├── firebase.js                # Shared Firebase app and Auth instance
+│   │   ├── main.jsx
+│   │   └── index.css
+│   └── .env.example
+├── backend/
+│   ├── app/
+│   │   ├── main.py                    # API endpoints and analysis orchestration
+│   │   ├── feature_extractor.py
+│   │   ├── nvidia_service.py
+│   │   └── sightengine_service.py
+│   ├── evaluate_detector.py
+│   ├── evaluation.json
+│   ├── tests/
+│   ├── requirements.txt
+│   └── .env.example
+├── firebase.json
+├── train_model.py
+└── LICENSE
 ```
-
----
-
-## 🚀 Quick Start Guide
-
-### Prerequisites
-- **Python 3.10+**
-- **Node.js 18+** & **npm**
-
----
-
-### 1. Backend Setup
-
-```bash
-# Navigate to the backend directory
-cd backend
-
-# Create and activate a virtual environment
-python -m venv venv
-
-# On Windows PowerShell:
-.\venv\Scripts\Activate.ps1
-# On macOS / Linux:
-# source venv/bin/activate
-
-# Install Python requirements
-pip install -r requirements.txt
-
-# (Optional) Setup Sightengine API credentials
-cp .env.example .env
-
-# Start the FastAPI development server
-uvicorn app.main:app --reload --port 8000
-```
-
-- Backend API: `http://localhost:8000`
-- API Health Status: `http://localhost:8000/health`
-- Interactive OpenAPI Docs: `http://localhost:8000/docs`
-
----
-
-### 2. Frontend Setup
-
-In a separate terminal:
-
-```bash
-# Navigate to frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start Vite dev server
-npm run dev
-```
-
-Open your browser at **`http://localhost:5173`**.
-
----
-
-## 🔧 Integrating Your Own Custom Model
-
-You can easily replace the model and feature extractor with your own:
-
-1. **Place your trained model**: Save your scikit-learn model as `model.pkl` in `backend/` (or keep `ai_detector_svm.pkl` in the root).
-2. **Update feature extraction**: Open `backend/app/feature_extractor.py` and modify `extract_fingerprint(image)` to match your custom feature representation:
-
-```python
-def extract_fingerprint(image: Image.Image) -> np.ndarray:
-    """
-    PASTE YOUR CUSTOM FEATURE EXTRACTION CODE HERE.
-    
-    Accepts: PIL Image object
-    Returns: 1D numpy array of features matching your model's input shape.
-    """
-    # ... your custom feature vector calculation ...
-    return feature_vector
-```
-
----
-
-## 🌐 Sightengine GenAI API Setup (Optional)
-
-To enable side-by-side commercial comparison on the dashboard:
-1. Create a free account at [Sightengine](https://sightengine.com/).
-2. In `backend/.env`, set:
-   ```env
-   SIGHTENGINE_API_USER=your_user_id
-   SIGHTENGINE_API_SECRET=your_secret_key
-   ```
-3. Restart the backend server. The dashboard will automatically display live side-by-side consensus validation!
-
----
-
-## 📜 License
-
-This project is open-source and available under the [MIT License](LICENSE).
 
 ## Ensemble weighting and local evaluation
 
@@ -238,3 +202,25 @@ Reproduce the evaluation from `backend` using a labeled archive containing `test
 ```
 
 The sampled result was **56.25% (225/400 correct)**: 89/200 real images and 136/200 fake images classified correctly, with no unreadable samples. The checked-in `backend/evaluation.json` records the actual sample, artifact SHA-256, runtime version, confusion matrix and score. It evaluates only the local saved classifier, not a deployed Render instance or Gemma. Training overlap and dataset provenance are unverified, so this is not an independently established held-out or universal accuracy. No new API requests or retraining are needed for this evaluation. The 80/20 ensemble still needs its own labeled evaluation before claiming better accuracy.
+
+## Build and verification
+
+```powershell
+cd frontend
+npm.cmd run build
+npm.cmd run preview
+```
+
+The production build is written to `frontend/dist`. Use the URL printed by the preview command to inspect it.
+
+The repository has no configured automated lint or type-check scripts. Backend unit tests can be run with `unittest` as shown above.
+
+## Contributing
+
+Preserve the existing analyzer, result dashboard, shared shell, and authentication setup unless a task explicitly includes them.
+
+For quota or account work, establish the authoritative service contract and configured Firebase providers first. Do not add a competing client-only quota, fabricate analysis responses, or commit environment files.
+
+## Author and license
+
+Created by **Full Sack Four Eyes**. Licensed under the [MIT License](LICENSE).

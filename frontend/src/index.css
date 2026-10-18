@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #F4F4F0;
+    color: #0F172A;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .dark body {
+    background-color: #050508;
+    color: #FFFFFF;
+  }
+}
+
+/* Minimalist Neo-Brutalist Glassmorphism for Light & Dark */
+.glass-brutal {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid #000000;
+  box-shadow: 6px 6px 0px 0px #000000;
+}
+
+.dark .glass-brutal {
+  background: rgba(14, 14, 20, 0.92);
+  border: 2px solid #FFFFFF;
+  box-shadow: 6px 6px 0px 0px #000000;
+}
+
+.glass-brutal-card {
+  background: #FFFFFF;
+  backdrop-filter: blur(16px);
+  border: 2px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+}
+
+.dark .glass-brutal-card {
+  background: rgba(20, 20, 30, 0.9);
+  border: 2px solid #FFFFFF;
+  box-shadow: 4px 4px 0px 0px #000000;
+}
+
+.glass-brutal-card:hover {
+  transform: translate(-2px, -2px);
+  border-color: #000000;
+  box-shadow: 6px 6px 0px 0px #000000;
+}
+
+.dark .glass-brutal-card:hover {
+  border-color: #FFE600;
+  box-shadow: 6px 6px 0px 0px #FFE600;
+}
+
+/* Tactile Interactive Buttons */
+.btn-brutal-yellow {
+  background-color: #FFE600;
+  color: #000000;
+  font-weight: 900;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .btn-brutal-yellow {
+  box-shadow: 3px 3px 0px 0px #FFFFFF;
+}
+.btn-brutal-yellow:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+.dark .btn-brutal-yellow:hover {
+  box-shadow: 5px 5px 0px 0px #FFFFFF;
+}
+.btn-brutal-yellow:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #000000;
+}
+
+.btn-brutal-dark {
+  background-color: #FFFFFF;
+  color: #000000;
+  font-weight: 800;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .btn-brutal-dark {
+  background-color: #181824;
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
+}
+.btn-brutal-dark:hover {
+  background-color: #FFE600;
+  color: #000000;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+.dark .btn-brutal-dark:hover {
+  background-color: #FFFFFF;
+  color: #000000;
+  border-color: #000000;
+  box-shadow: 5px 5px 0px 0px #FFE600;
+}
+.btn-brutal-dark:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #000000;
+}
+
+/* Dot Matrix Grid in Light and Dark */
+.bg-brutal-grid {
+  background-size: 26px 26px;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.12) 1.5px, transparent 1.5px);
+}
+
+.dark .bg-brutal-grid {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.14) 1.5px, transparent 1.5px);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F4F4F0;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #050508;
+}
+::-webkit-scrollbar-thumb {
+  background: #FFE600;
+  border: 1px solid #000000;
+}

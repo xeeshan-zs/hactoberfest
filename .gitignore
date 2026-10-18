@@ -1,0 +1,48 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+
+# Python environments and caches
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node dependencies and build output
+node_modules/
+dist/
+dist-ssr/
+build/
+coverage/
+.vite/
+
+# Logs and local tooling
+*.log
+.firebase/
+.codex-build/
+.codex-finalizer/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Datasets and generated media
+data-set/
+*.zip
+*.tar.gz
+*.7z
+brag-output/
+deliverables/
+output/
+present/
